@@ -22,7 +22,7 @@ static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 # Channel Secret
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
-gmaps = googlemaps.Client(key='GOODLEMAPS_API')
+gmaps = googlemaps.Client(key='AIzaSyDMLx-tmT9oiAb20Phg0SDdSZzJCWpi7Bw')
 location = {}
 
 # 監聽所有來自 /callback 的 Post Request
@@ -98,15 +98,18 @@ def handle_location2(event):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
-    places_result = gmaps.places_nearby(location, keyword= msg, radius=1000)
-    i = 0
-    for place in places_result['results']:
-        if i < 5:
-            re = place['name'],place['vicinity']
-            line_bot_api.reply_message(event.reply_token, re)
-            i += 1
-        else:
-            break        
+    if msg == '加油站' or msg == '停車場':
+        places_result = gmaps.places_nearby(location, keyword= msg, radius=1000)
+        i = 0
+        for place in places_result['results']:
+            if i < 5:
+                re = place['name'],place['vicinity']
+                line_bot_api.reply_message(event.reply_token, re)
+                i += 1
+            else:
+                break 
+    else:
+        line_bot_api.reply_message(event.reply_token, "無此搜尋類別")
 
 @handler.add(PostbackEvent)
 def handle_message(event):
@@ -125,5 +128,4 @@ def welcome(event):
         
 import os
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run()
