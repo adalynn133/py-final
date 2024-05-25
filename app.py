@@ -62,9 +62,10 @@ def handle_location(event):
             place_lat = place['geometry']['location']['lat']
             place_lng = place['geometry']['location']['lng']
             maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
+            score = place['user_ratings_total']
                 
             location_message = TextSendMessage(
-                text=f"{place_name}\n地址: {place_address}\n地圖: {maps_url}"
+                text=f"{place_name}\n地址: {place_address}\n評分：{score}\n地圖: {maps_url}"
                 )
             messages.append(location_message)
             line_bot_api.reply_message(event.reply_token, messages)
