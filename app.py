@@ -21,6 +21,7 @@ static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 # Channel Secret
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
+gmaps = googlemaps.Client(key='AIzaSyDMLx-tmT9oiAb20Phg0SDdSZzJCWpi7Bw')
 
 
 # 監聽所有來自 /callback 的 Post Request
@@ -48,12 +49,22 @@ def handle_message(event):
                                 QuickReplyButton(action=LocationAction(label="位置"))
                                ]))
         line_bot_api.reply_message(event.reply_token, flex_message)
+        try:
+            
     else:
         sendback = TextSendMessage(text='請重新輸入')
         line_bot_api.reply_message(event.reply_token, sendback)
         
     
-       
+ def handle_location_message(event):
+    latitude = event.message.latitude
+    longitude = event.message.longitude
+
+    reply_text = f"Your location is (Lat: {latitude}, Long: {longitude})"
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=reply_text)
+    )    
     
         
 
