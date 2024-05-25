@@ -58,7 +58,7 @@ def handle_location(event):
     for place in places_result['results']:
         location_message = LocationSendMessage(
             title= place['name'],
-            latitude=place['lat']
+            latitude=place['lat'],
             longitude=['lng']
         )
         line_bot_api.reply_message(event.reply_token, location_message)
