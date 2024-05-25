@@ -45,54 +45,10 @@ def callback():
 def handle_message(event):
     msg = event.message.text
     if msg == "停車場" or msg == "加油站":
-        sendback = TextSendMessage(text='請加入您的位置～')
-        line_bot_api.reply_message(event.reply_token, sendback)
-        flex_message = FlexSendMessage(
-        alt_text= '停車場',
-        contents={
-  "type": "bubble",
-  "hero": {
-    "type": "image",
-    "size": "full",
-    "aspectRatio": "20:13",
-    "aspectMode": "cover",
-    "action": {
-      "type": "uri",
-      "uri": "https://line.me/"
-    },
-    "position": "absolute",
-    "url": "https://www.freepik.com/search?format=search&img=1&last_filter=img&last_value=1&query=Car&type=icon"
-  },
-  "footer": {
-    "type": "box",
-    "layout": "vertical",
-    "spacing": "sm",
-    "contents": [
-      {
-        "type": "button",
-        "style": "link",
-        "height": "sm",
-        "action": {
-          "type": "message",
-          "label": "加油站",
-          "text": "加油站"
-        }
-      },
-      {
-        "type": "button",
-        "style": "link",
-        "height": "sm",
-        "action": {
-          "type": "message",
-          "label": "停車場",
-          "text": "停車場"
-        }
-      }
-    ],
-    "flex": 0
-  }
-}
-    )
+        flex_message = TextSendMessage(text='請導入您的位置',
+                               quick_reply=QuickReply(items=[
+                                   QuickReplyButton(action=LocationAction(label="位置"))
+                               ]))
         line_bot_api.reply_message(event.reply_token, flex_message)
        
     
