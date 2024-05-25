@@ -49,7 +49,6 @@ def handle_message(event):
                                 QuickReplyButton(action=LocationAction(label="位置"))
                                ]))
         line_bot_api.reply_message(event.reply_token, flex_message)
-        try:
             
     else:
         sendback = TextSendMessage(text='請重新輸入')
