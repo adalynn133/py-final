@@ -1,28 +1,21 @@
 from flask import Flask, request, abort
-
-from linebot import (
-    LineBotApi, WebhookHandler
-)
-from linebot.exceptions import (
-    InvalidSignatureError
-)
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-#======python的函數庫==========
 import tempfile, os
 import datetime
 import googlemaps
 import time
 import traceback
-#======python的函數庫==========
 
 app = Flask(__name__)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
+
 # Channel Access Token
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 # Channel Secret
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 gmaps = googlemaps.Client(key='AIzaSyDMLx-tmT9oiAb20Phg0SDdSZzJCWpi7Bw')
-
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -44,19 +37,19 @@ def callback():
 def handle_message(event):
     msg = event.message.text
     if msg == "停車場" or msg == "加油站":
-        flex_message = TextSendMessage(text='請導入您的位置',
-                            quick_reply=QuickReply(items=[
-                                QuickReplyButton(action=LocationAction(label="位置"))
-                               ]))
+        flex_message = TextSendMessage(
+            text='請導入您的位置',
+            quick_reply=QuickReply(items=[
+                QuickReplyButton(action=LocationAction(label="位置"))
+            ])
+        )
         line_bot_api.reply_message(event.reply_token, flex_message)
-            
     else:
         sendback = TextSendMessage(text='請重新輸入')
         line_bot_api.reply_message(event.reply_token, sendback)
 
-        
 @handler.add(MessageEvent, message=LocationMessage)
-    def handle_location(event):
+def handle_location(event):
     latitude = event.message.latitude
     longitude = event.message.longitude
 
@@ -64,14 +57,11 @@ def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=reply_text)
-    )    
-    
-        
+    )
 
 @handler.add(PostbackEvent)
-def handle_message(event):
+def handle_postback(event):
     print(event.postback.data)
-
 
 @handler.add(MemberJoinedEvent)
 def welcome(event):
@@ -81,8 +71,6 @@ def welcome(event):
     name = profile.display_name
     message = TextSendMessage(text='您的線上副駕駛已經上線～～')
     line_bot_api.reply_message(event.reply_token, message)
-        
-        
-import os
+
 if __name__ == "__main__":
     app.run()
