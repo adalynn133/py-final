@@ -58,8 +58,9 @@ def handle_message(event):
     global search_keyword  
     search_keyword = event.message.text
     if search_keyword == "使用說明":
-        how_to_use = '使用說明：\n一、傳貼圖以快速點選加油站、停車場等位置查詢；或是輸入想查詢的附近位置關鍵字。\n二、跟隨指示導入現在位置。\n三、獲得關鍵字查詢下前三近的地點資訊。\n四、點入欲前往的地方以使用googlemaps導航。'
-        line_bot_api.reply_message(event.reply_token, how_to_use)
+        how_to_use = '您的副駕駛已經上線～\n使用說明：\n一、傳貼圖以快速點選加油站、停車場等位置查詢，或是輸入想查詢的附近位置關鍵字。\n二、跟隨指示導入現在位置。\n三、獲得查詢下前三近的地點資訊。\n四、點入欲前往的地點以使用googlemaps導航前往。'
+        message = TextSendMessage(text=how_to_use)
+        line_bot_api.reply_message(event.reply_token, message)
     else:
         flex_message = TextSendMessage(
             text='請導入您的位置',
@@ -108,8 +109,8 @@ def welcome(event):
     gid = event.source.group_id
     profile = line_bot_api.get_group_member_profile(gid, uid)
     name = profile.display_name
-    welcome_msg = '您的副駕駛已經上線～\n使用說明：\n一、傳貼圖以快速點選加油站、停車場等位置查詢；或是輸入想查詢的附近位置關鍵字。\n二、跟隨指示導入現在位置。\n三、獲得關鍵字查詢下前三近的地點資訊。\n四、點入欲前往的地方以使用googlemaps導航。'
-    message = TextSendMessage(text=welcome_msg)
+    welcome_msg = '您的副駕駛已經上線～\n使用說明：\n一、傳貼圖以快速點選加油站、停車場等位置查詢，或是輸入想查詢的附近位置關鍵字。\n二、跟隨指示導入現在位置。\n三、獲得查詢下前三近的地點資訊。\n四、點入欲前往的地點以使用googlemaps導航前往。'
+    message = TextSendMessage(text = welcome_msg)
     line_bot_api.reply_message(event.reply_token, message)
 
 if __name__ == "__main__":
