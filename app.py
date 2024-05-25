@@ -53,11 +53,11 @@ def handle_location(event):
     latitude = event.message.latitude
     longitude = event.message.longitude
     location = {'lat': latitude, 'lng': longitude}
-    places_result = gmaps.places_nearby(location, keyword='gas station', radius=500)
+    places_result = gmaps.places_nearby(location, keyword='parking', radius=500)
     try:
         for place in places_result['results']:
             location_message = LocationSendMessage(
-                title=place['name'],
+                title=place['vicinity'],
                 address=place.get('vicinity', 'No address provided'),
                 latitude=place['geometry']['location']['lat'],
                 longitude=place['geometry']['location']['lng']
