@@ -44,11 +44,6 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
-    flex_message = TextSendMessage(text='請導入您的位置',
-                            quick_reply=QuickReply(items=[
-                                QuickReplyButton(action=LocationAction(label="位置"))
-                               ]))
-    line_bot_api.reply_message(event.reply_token, flex_message)
        
     
         
@@ -70,4 +65,9 @@ def welcome(event):
         
 import os
 if __name__ == "__main__":
+    flex_message = TextSendMessage(text='請導入您的位置',
+                            quick_reply=QuickReply(items=[
+                                QuickReplyButton(action=LocationAction(label="位置"))
+                               ]))
+    line_bot_api.reply_message(event.reply_token, flex_message)
     app.run()
