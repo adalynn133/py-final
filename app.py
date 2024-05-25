@@ -54,8 +54,8 @@ def handle_message(event):
         sendback = TextSendMessage(text='請重新輸入')
         line_bot_api.reply_message(event.reply_token, sendback)
         
- @handler.add(MessageEvent, message=LocationMessage)   
- def handle_location_message(event):
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_location(event):
     latitude = event.message.latitude
     longitude = event.message.longitude
 
