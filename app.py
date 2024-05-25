@@ -63,7 +63,7 @@ def handle_location(event):
         i = 0
         for place in places_result['results']:
             if i < 5:
-                loc = str(place['icon'])
+                loc = place['icon']
                 line_bot_api.reply_message(event.reply_token, loc)
                 i += 1
             else:
