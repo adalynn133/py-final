@@ -54,17 +54,18 @@ def handle_location(event):
     longitude = event.message.longitude
     location = {'lat': latitude, 'lng': longitude}
     places_result = gmaps.places_nearby(location, keyword='gas station', radius=500)
-    if len(places_result) == 0:
-        error_text = TextSendMessage(text='500公尺內沒有目標地點')
-        line_bot_api.reply_message(event.reply_token, error_text)
-    else:
+    try:
         for place in places_result['results']:
             location_message = LocationSendMessage(
                 title=place['name'],
+                address=place.get('vicinity', 'No address provided'),
                 latitude=place['geometry']['location']['lat'],
                 longitude=place['geometry']['location']['lng']
             )
             line_bot_api.reply_message(event.reply_token, location_message)
+    except linebot.exceptions.LineBotApiError as e:
+        error_text = TextSendMessage(text='500公尺內沒有目標地點')
+        line_bot_api.reply_message(event.reply_token, error_text)
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
