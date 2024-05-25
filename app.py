@@ -36,7 +36,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
-    if msg == "停車場" or msg == "加油站":
+    if msg == "停車場" or msg == "加油站" or msg == "超商":
         flex_message = TextSendMessage(
             text='請導入您的位置',
             quick_reply=QuickReply(items=[
