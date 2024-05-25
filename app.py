@@ -129,7 +129,7 @@ def jobs_progress(uid):
                 }
         bubbles.append(bubble)
     contents['contents']=bubbles
-    message=FlexSendMessage(alt_text='工作進度',contents=contents)
+    message=FlexSendMessage(alt_text='停車場',contents=contents)
     return message
     
 # 處理訊息
