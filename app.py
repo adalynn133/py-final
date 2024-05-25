@@ -55,7 +55,7 @@ def handle_location(event):
     location = {}
     location.update({'lat': latitude, 'lng': longitude})
     places_result = gmaps.places_nearby(location, type = 'gas_station', radius=500)
-    if len(place_result) < 5:
+    if len(places_result) < 5:
         for place in places_result['results']:
             loc = str(place['icon'])
             line_bot_api.reply_message(event.reply_token, loc)
