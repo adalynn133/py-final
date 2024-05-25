@@ -35,42 +35,43 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    msg = event.message.text
-    if msg == "停車場" or msg == "加油站" or msg == "超商":
-        flex_message = TextSendMessage(
+    global search_keyword  
+    search_keyword = event.message.text
+    flex_message = TextSendMessage(
             text='請導入您的位置',
             quick_reply=QuickReply(items=[
                 QuickReplyButton(action=LocationAction(label="位置"))
             ])
         )
-        line_bot_api.reply_message(event.reply_token, flex_message)
-    else:
-        sendback = TextSendMessage(text='請重新輸入')
-        line_bot_api.reply_message(event.reply_token, sendback)
+    line_bot_api.reply_message(event.reply_token, flex_message)
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
     latitude = event.message.latitude
     longitude = event.message.longitude
     location = {'lat': latitude, 'lng': longitude}
-    places_result = gmaps.places_nearby(location, keyword='parking', radius=500)
     try:
-        messages = []
-        for place in places_result['results']:
-            place_name = place['name']
-            place_address = place.get('vicinity', 'No address provided')
-            place_lat = place['geometry']['location']['lat']
-            place_lng = place['geometry']['location']['lng']
-            maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
-            score = place['user_ratings_total']
-                
-            location_message = TextSendMessage(
+        places_result = gmaps.places_nearby(location, keyword=search_keyword, radius=500)
+        if 'results' in places_result and places_result['results']:
+            messages = []
+            for place in places_result['results']:
+                place_name = place['name']
+                place_address = place.get('vicinity', 'No address provided')
+                place_lat = place['geometry']['location']['lat']
+                place_lng = place['geometry']['location']['lng']
+                maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
+                score = place['user_ratings_total']
+                location_message = TextSendMessage(
                 text=f"{place_name}\n地址: {place_address}\n評分：{score}\n地圖: {maps_url}"
                 )
-            messages.append(location_message)
-            line_bot_api.reply_message(event.reply_token, messages)
+                messages.append(location_message)
+                line_bot_api.reply_message(event.reply_token, messages)
+        else:
+            error_text = TextSendMessage(text='500公尺內沒有目標地點')
+            line_bot_api.reply_message(event.reply_token, error_text)
     except Exception as e:
-        error_text = TextSendMessage(text='500公尺內沒有目標地點')
+        app.logger.error(f"Error: {str(e)}")
+        error_text = TextSendMessage(text='發生錯誤，請稍後再試')
         line_bot_api.reply_message(event.reply_token, error_text)
 
 @handler.add(PostbackEvent)
