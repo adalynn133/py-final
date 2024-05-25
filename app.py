@@ -55,15 +55,20 @@ def handle_location(event):
     location = {'lat': latitude, 'lng': longitude}
     places_result = gmaps.places_nearby(location, keyword='parking', radius=500)
     try:
+        messages = []
         for place in places_result['results']:
-            location_message = LocationSendMessage(
-                title=place['geometry'],
-                address=place.get('vicinity', 'No address provided'),
-                latitude=place['geometry']['location']['lat'],
-                longitude=place['geometry']['location']['lng']
-            )
-            line_bot_api.reply_message(event.reply_token, location_message)
-    except linebot.exceptions.LineBotApiError as e:
+            place_name = place['name']
+            place_address = place.get('vicinity', 'No address provided')
+            place_lat = place['geometry']['location']['lat']
+            place_lng = place['geometry']['location']['lng']
+            maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
+                
+            location_message = TextSendMessage(
+                text=f"{place_name}\n地址: {place_address}\n地圖: {maps_url}"
+                )
+            messages.append(location_message)
+            line_bot_api.reply_message(event.reply_token, messages)
+    except Exception as e:
         error_text = TextSendMessage(text='500公尺內沒有目標地點')
         line_bot_api.reply_message(event.reply_token, error_text)
 
@@ -77,7 +82,7 @@ def welcome(event):
     gid = event.source.group_id
     profile = line_bot_api.get_group_member_profile(gid, uid)
     name = profile.display_name
-    message = TextSendMessage(text='您的線上副駕駛已經上線～～')
+    message = TextSendMessage(text='您的副駕駛已經上線～～')
     line_bot_api.reply_message(event.reply_token, message)
 
 if __name__ == "__main__":
