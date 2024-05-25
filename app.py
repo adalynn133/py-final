@@ -45,8 +45,18 @@ def callback():
 def handle_message(event):
     msg = event.message.text
     if msg == "停車場" or msg == "加油站":
-        sendback = TextSendMessage(text='請輸入加入您的位置～')
+        sendback = TextSendMessage(text='請加入您的位置～')
         line_bot_api.reply_message(event.reply_token, sendback)
+        message=TextSendMessage(
+        text="文字訊息",
+        quick_reply=QuickReply(
+        items=[
+            QuickReplyButton(
+                action=LocationAction(label="傳送位置")
+                )
+            ]
+        )
+    )
     
         
 
