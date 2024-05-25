@@ -62,7 +62,7 @@ def handle_location(event):
                 longitude=place['geometry']['location']['lng']
             )
             line_bot_api.reply_message(event.reply_token, location_message)
-    except linebot.exceptions.LineBotApiError:
+    except LineBotApiError:
         error_text = TextSendMessage(text='500公尺內沒有目標地點')
         line_bot_api.reply_message(event.reply_token, error_text)
 
