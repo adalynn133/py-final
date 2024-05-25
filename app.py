@@ -38,12 +38,24 @@ def callback():
         abort(400)
     return 'OK'
 
-
+def quick_location(uid):
+    flex_message = TextSendMessage(text='請導入您的位置',
+                            quick_reply=QuickReply(items=[
+                                QuickReplyButton(action=LocationAction(label="位置"))
+                               ]))
+    line_bot_api.reply_message(event.reply_token, flex_message)
 
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
+    if msg == "停車場" or msg == "加油站":
+        quick_location()
+    else:
+        sendback = TextSendMessage(text='請重新輸入')
+        line_bot_api.reply_message(event.reply_token, sendback)
+        
+    
        
     
         
@@ -65,9 +77,4 @@ def welcome(event):
         
 import os
 if __name__ == "__main__":
-    flex_message = TextSendMessage(text='請導入您的位置',
-                            quick_reply=QuickReply(items=[
-                                QuickReplyButton(action=LocationAction(label="位置"))
-                               ]))
-    line_bot_api.reply_message(event.reply_token, flex_message)
     app.run()
