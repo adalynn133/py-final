@@ -7,7 +7,6 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import *
-from Flex_msg import *
 #======python的函數庫==========
 import tempfile, os
 import datetime
@@ -40,98 +39,7 @@ def callback():
     return 'OK'
 
 
-def jobs_progress(uid):
-    contents=dict()
-    contents['type']='carousel'
-    bubbles=[]
-    datas = Jobs.objects.filter(uid=uid)
-    for data in datas:
-        label = data.job_name
-        percentage = data.percentage
-        text = data.description
-        bubble= {   "type": "bubble",
-                    "size": "nano",
-                    "header": {
-                        "type": "box",
-                        "layout": "vertical",
-                        "contents": [
-                        {
-                            "type": "text",
-                            "text": label,
-                            "color": "#ffffff",
-                            "align": "start",
-                            "size": "md",
-                            "gravity": "center"
-                        },
-                        {
-                            "type": "text",
-                            "text": str(percentage)+"%",
-                            "color": "#ffffff",
-                            "align": "start",
-                            "size": "xs",
-                            "gravity": "center",
-                            "margin": "lg"
-                        },
-                        {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                            {
-                                "type": "box",
-                                "layout": "vertical",
-                                "contents": [
-                                {
-                                    "type": "filler"
-                                }
-                                ],
-                                "width": str(percentage)+"%",
-                                "backgroundColor": "#0D8186",
-                                "height": "6px"
-                            }
-                            ],
-                            "backgroundColor": "#9FD8E36E",
-                            "height": "6px",
-                            "margin": "sm"
-                        }
-                        ],
-                        "backgroundColor": "#27ACB2",
-                        "paddingTop": "19px",
-                        "paddingAll": "12px",
-                        "paddingBottom": "16px"
-                    },
-                    "body": {
-                        "type": "box",
-                        "layout": "vertical",
-                        "contents": [
-                        {
-                            "type": "box",
-                            "layout": "horizontal",
-                            "contents": [
-                            {
-                                "type": "text",
-                                "text": text,
-                                "color": "#8C8C8C",
-                                "size": "sm",
-                                "wrap": True
-                            }
-                            ],
-                            "flex": 1
-                        }
-                        ],
-                        "spacing": "md",
-                        "paddingAll": "12px"
-                    },
-                    "styles": {
-                        "footer": {
-                        "separator": False
-                        }
-                    }
-                }
-        bubbles.append(bubble)
-    contents['contents']=bubbles
-    message=FlexSendMessage(alt_text='停車場',contents=contents)
-    return message
-    
+
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -139,6 +47,53 @@ def handle_message(event):
     if msg == "停車場" or msg == "加油站":
         sendback = TextSendMessage(text='請加入您的位置～')
         line_bot_api.reply_message(event.reply_token, sendback)
+        flex_message = FlexSendMessage(
+        alt_text= '停車場',
+        contents={
+  "type": "bubble",
+  "hero": {
+    "type": "image",
+    "size": "full",
+    "aspectRatio": "20:13",
+    "aspectMode": "cover",
+    "action": {
+      "type": "uri",
+      "uri": "https://line.me/"
+    },
+    "position": "absolute",
+    "url": "https://www.freepik.com/search?format=search&img=1&last_filter=img&last_value=1&query=Car&type=icon"
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "spacing": "sm",
+    "contents": [
+      {
+        "type": "button",
+        "style": "link",
+        "height": "sm",
+        "action": {
+          "type": "message",
+          "label": "加油站",
+          "text": "加油站"
+        }
+      },
+      {
+        "type": "button",
+        "style": "link",
+        "height": "sm",
+        "action": {
+          "type": "message",
+          "label": "停車場",
+          "text": "停車場"
+        }
+      }
+    ],
+    "flex": 0
+  }
+}
+    )
+        line_bot_api.reply_message(event.reply_token, flex_message)
        
     
         
