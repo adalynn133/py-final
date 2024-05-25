@@ -54,7 +54,7 @@ def handle_location(event):
     longitude = event.message.longitude
     location = {}
     location.update({'lat': latitude, 'lng': longitude})
-    places_result = gmaps.places_nearby(location, keyword = '加油站', radius=500)
+    places_result = gmaps.places_nearby(location, keyword = 'gas station', radius=500)
     try:
         for place in places_result['results']:
         location_message = LocationSendMessage(
