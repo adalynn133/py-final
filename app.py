@@ -20,50 +20,6 @@ line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 gmaps = googlemaps.Client(key='AIzaSyDMLx-tmT9oiAb20Phg0SDdSZzJCWpi7Bw')
 
-def create_rich_menu():
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {os.getenv("CHANNEL_ACCESS_TOKEN")}'
-    }
-
-    rich_menu_data = {
-        "size": {"width": 2500, "height": 843},
-        "selected": True,
-        "name": "Text Menu",
-        "chatBarText": "選單",
-        "areas": [
-            {
-                "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                "action": {"type": "message", "text": "停車場"}
-            },
-            {
-                "bounds": {"x": 834, "y": 0, "width": 833, "height": 843},
-                "action": {"type": "message", "text": "加油站"}
-            },
-            {
-                "bounds": {"x": 1667, "y": 0, "width": 833, "height": 843},
-                "action": {"type": "message", "text": "超商"}
-            }
-        ]
-    }
-
-    response = requests.post(
-        'https://api.line.me/v2/bot/richmenu',
-        headers=headers,
-        data=json.dumps(rich_menu_data)
-    )
-    response_data = response.json()
-    rich_menu_id = response_data.get('richMenuId')
-
-    if rich_menu_id:
-        bind_response = requests.post(
-            f'https://api.line.me/v2/bot/user/all/richmenu/{rich_menu_id}',
-            headers=headers
-        )
-        return bind_response.status_code == 200
-    return False
-
-
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -135,8 +91,4 @@ def welcome(event):
     line_bot_api.reply_message(event.reply_token, message)
 
 if __name__ == "__main__":
-    if create_rich_menu():
-        print("Rich menu created and bound successfully.")
-    else:
-        print("Failed to create and bind rich menu.")
     app.run()
