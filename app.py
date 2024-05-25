@@ -57,7 +57,7 @@ def handle_location(event):
     try:
         for place in places_result['results']:
             location_message = LocationSendMessage(
-                title=place['vicinity'],
+                title=place['plus_code'],
                 address=place.get('vicinity', 'No address provided'),
                 latitude=place['geometry']['location']['lat'],
                 longitude=place['geometry']['location']['lng']
