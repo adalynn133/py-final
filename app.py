@@ -54,7 +54,7 @@ def handle_location(event):
         places_result = gmaps.places_nearby(location, keyword=search_keyword, radius=500)
         if 'results' in places_result and places_result['results']:
             messages = []
-            for place in places_result['results']:
+            for place in places_result['results'][:3]:
                 place_name = place['name']
                 place_address = place.get('vicinity', 'No address provided')
                 place_lat = place['geometry']['location']['lat']
@@ -65,7 +65,7 @@ def handle_location(event):
                 text=f"{place_name}\n地址: {place_address}\n評分：{score}\n地圖: {maps_url}"
                 )
                 messages.append(location_message)
-                line_bot_api.reply_message(event.reply_token, messages)
+            line_bot_api.reply_message(event.reply_token, messages)
         else:
             error_text = TextSendMessage(text='500公尺內沒有目標地點')
             line_bot_api.reply_message(event.reply_token, error_text)
