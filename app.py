@@ -52,12 +52,25 @@ def handle_message(event):
 def handle_location(event):
     latitude = event.message.latitude
     longitude = event.message.longitude
-
-    reply_text = f"Your location is (Lat: {latitude}, Long: {longitude})"
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=reply_text)
-    )
+    location = {}
+    location.update({'lat': latitude, 'lng': longitude})
+    places_result = gmaps.places_nearby(location, type = 'gas_station', radius=500)
+    if len(place_result) < 5:
+        for place in places_result['results']:
+            loc = str(place['icon'])
+            line_bot_api.reply_message(event.reply_token, loc)
+    else:
+        i = 0
+        for place in places_result['results']:
+            if i < 5:
+                loc = str(place['icon'])
+                line_bot_api.reply_message(event.reply_token, loc)
+                i += 1
+            else:
+                break
+                
+            
+            
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
