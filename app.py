@@ -36,6 +36,23 @@ def callback():
     return 'OK'
 
 # 處理訊息
+@handler.add(MessageEvent, message=StickerMessage)
+def handle_sticker_message(event):
+    sticker_message = StickerSendMessage(
+        package_id=event.message.package_id,
+        sticker_id=event.message.sticker_id
+    )
+    flex_message = TextSendMessage(
+            text='請導入您的位置',
+            quick_reply=QuickReply(items=[
+                QuickReplyButton(action=MessageAction(label="停車場", text="停車場")),
+                QuickReplyButton(action=MessageAction(label="加油站", text="加油站")),
+                QuickReplyButton(action=MessageAction(label="超商", text="超商"))
+
+            ])
+        )
+    line_bot_api.reply_message(event.reply_token, flex_message)
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     global search_keyword  
