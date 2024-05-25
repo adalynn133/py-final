@@ -56,8 +56,12 @@ def handle_location(event):
     location.update({'lat': latitude, 'lng': longitude})
     places_result = gmaps.places_nearby(location, type = 'gas_station', radius=500)
     for place in places_result['results']:
-        loc = place['icon']
-        line_bot_api.reply_message(event.reply_token, loc)
+        location_message = LocationSendMessage(
+            title= place['name'],
+            latitude=place['lat']
+            longitude=['lng']
+        )
+        line_bot_api.reply_message(event.reply_token, location_message)
                 
             
             
