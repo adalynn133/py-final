@@ -10,6 +10,7 @@ import traceback
 import json
 import os
 import requests
+import pandas as pd
 
 app = Flask(__name__)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
@@ -47,8 +48,8 @@ def handle_sticker_message(event):
             quick_reply=QuickReply(items=[
                 QuickReplyButton(action=MessageAction(label="停車場", text="停車場")),
                 QuickReplyButton(action=MessageAction(label="加油站", text="加油站")),
-                QuickReplyButton(action=MessageAction(label="超商", text="超商"))
-
+                QuickReplyButton(action=MessageAction(label="超商", text="超商")),
+                QuickReplyButton(action=MessageAction(label="服務區休息站", text="服務區休息站"))
             ])
         )
     line_bot_api.reply_message(event.reply_token, flex_message)
@@ -61,6 +62,18 @@ def handle_message(event):
         how_to_use = '使用說明：\n一、傳貼圖以快速點選加油站、停車場等位置查詢，或是輸入想查詢的附近位置關鍵字。\n二、跟隨指示導入現在位置。\n三、獲得查詢下前三近的地點資訊。\n四、點入欲前往的地點以使用googlemaps導航前往。'
         message = TextSendMessage(text=how_to_use)
         line_bot_api.reply_message(event.reply_token, message)
+    else if search_keyword == "服務區" or search_keyword == "休息站" or search_keyword == "服務區休息站":
+        flex_message = TextSendMessage(
+            text='請輸入北上或南下資訊',
+            quick_reply=QuickReply(items=[
+                QuickReplyButton(action=MessageAction(label="北上國1", text="北上國1")),
+                QuickReplyButton(action=MessageAction(label="南下國1", text="南下國1")),
+                QuickReplyButton(action=MessageAction(label="北上國3", text="北上國3")),
+                QuickReplyButton(action=MessageAction(label="南下國3", text="南下國3")),
+                QuickReplyButton(action=MessageAction(label="國5", text="國5"))
+            ])
+        )
+    line_bot_api.reply_message(event.reply_token, flex_message)
     else:
         flex_message = TextSendMessage(
             text='請導入您的位置',
@@ -72,32 +85,39 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
-    latitude = event.message.latitude
-    longitude = event.message.longitude
-    location = {'lat': latitude, 'lng': longitude}
-    try:
-        places_result = gmaps.places_nearby(location, keyword=search_keyword, radius=500)
-        if 'results' in places_result and places_result['results']:
-            messages = []
-            for place in places_result['results'][:3]:
-                place_name = place['name']
-                place_address = place.get('vicinity', 'No address provided')
-                place_lat = place['geometry']['location']['lat']
-                place_lng = place['geometry']['location']['lng']
-                maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
-                score = place['user_ratings_total']
-                location_message = TextSendMessage(
-                text=f"{place_name}\n地址: {place_address}\n評分：{score}\n地圖: {maps_url}"
-                )
-                messages.append(location_message)
-            line_bot_api.reply_message(event.reply_token, messages)
-        else:
-            error_text = TextSendMessage(text='500公尺內沒有目標地點')
+    if search_keyword == "北上國1" or search_keyword == "南下國1":
+        df = pd.read_csv('國1.csv')
+    elif search_keyword == "北上國3" or search_keyword == "南下國3":
+        df = pd.read_csv('國3.csv')
+    elif search_keyword == "國5":
+        df = pd.read_csv('國5.csv')
+    else:
+        latitude = event.message.latitude
+        longitude = event.message.longitude
+        location = {'lat': latitude, 'lng': longitude}
+        try:
+            places_result = gmaps.places_nearby(location, keyword=search_keyword, radius=500)
+            if 'results' in places_result and places_result['results']:
+                messages = []
+                for place in places_result['results'][:3]:
+                    place_name = place['name']
+                    place_address = place.get('vicinity', 'No address provided')
+                    place_lat = place['geometry']['location']['lat']
+                    place_lng = place['geometry']['location']['lng']
+                    maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
+                    score = place['user_ratings_total']
+                    location_message = TextSendMessage(
+                        text=f"{place_name}\n地址: {place_address}\n評分：{score}\n地圖: {maps_url}"
+                    )
+                    messages.append(location_message)
+                line_bot_api.reply_message(event.reply_token, messages)
+            else:
+                error_text = TextSendMessage(text='500公尺內沒有目標地點')
+                line_bot_api.reply_message(event.reply_token, error_text)
+        except Exception as e:
+            app.logger.error(f"Error: {str(e)}")
+            error_text = TextSendMessage(text='發生錯誤，請稍後再試')
             line_bot_api.reply_message(event.reply_token, error_text)
-    except Exception as e:
-        app.logger.error(f"Error: {str(e)}")
-        error_text = TextSendMessage(text='發生錯誤，請稍後再試')
-        line_bot_api.reply_message(event.reply_token, error_text)
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
