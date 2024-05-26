@@ -93,6 +93,7 @@ def handle_location(event):
     drtime = []
     origin = (latitude,longitude)
     ns = ''
+    plmessages = []
     if search_keyword == "北上國1" or search_keyword == "南下國1":
         df = pd.read_csv('國1.csv')
         filtered_df = df[df['北上1/南下2/雙向3'] == 3 ]
