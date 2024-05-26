@@ -63,7 +63,7 @@ def handle_message(event):
         how_to_use = '使用說明：\n一、傳貼圖以快速點選加油站、停車場等位置查詢，或是輸入想查詢的附近位置關鍵字。\n二、跟隨指示導入現在位置。\n三、獲得查詢下前三近的地點資訊。\n四、點入欲前往的地點以使用googlemaps導航前往。'
         message = TextSendMessage(text=how_to_use)
         line_bot_api.reply_message(event.reply_token, message)
-    else if search_keyword == "服務區" or search_keyword == "休息站" or search_keyword == "服務區休息站":
+    elif search_keyword == "服務區" or search_keyword == "休息站" or search_keyword == "服務區休息站":
         flex_message = TextSendMessage(
             text='請輸入北上或南下資訊',
             quick_reply=QuickReply(items=[
@@ -74,7 +74,7 @@ def handle_message(event):
                 QuickReplyButton(action=MessageAction(label="國5", text="國5"))
             ])
         )
-    line_bot_api.reply_message(event.reply_token, flex_message)
+        line_bot_api.reply_message(event.reply_token, flex_message)
     else:
         flex_message = TextSendMessage(
             text='請導入您的位置',
