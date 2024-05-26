@@ -118,8 +118,6 @@ def handle_location(event):
                 if elements['status'] == 'OK':
                     distance = elements['distance']['text']
                     duration = elements['duration']['text']
-                    print(f"Distance: {distance}")
-                    print(f"Duration: {duration}")
                 else:
                     distance = None
                     duration = None
@@ -146,11 +144,11 @@ def handle_location(event):
             else:
                 place_ns = '南'
             place_drtime = df_reset['行車時間'][i]
-            location_message = TextSendMessage(
+            place_message = TextSendMessage(
                         text=f"{place_ns}\n名稱: {place_name}\n行車時間：{place_drtime}\n地圖: {maps_url}"
                     )
-            messages.append(location_message)
-        line_bot_api.reply_message(event.reply_token, messages)
+            plmessages.append(place_message)
+        line_bot_api.reply_message(event.reply_token, plmessages)
    
     elif search_keyword == "北上國3" or search_keyword == "南下國3":
         df = pd.read_csv('國3.csv')
@@ -177,8 +175,6 @@ def handle_location(event):
                 if elements['status'] == 'OK':
                     distance = elements['distance']['text']
                     duration = elements['duration']['text']
-                    print(f"Distance: {distance}")
-                    print(f"Duration: {duration}")
                 else:
                     distance = None
                     duration = None
@@ -205,11 +201,11 @@ def handle_location(event):
             else:
                 place_ns = '南'
             place_drtime = df_reset['行車時間'][i]
-            location_message = TextSendMessage(
+            place_message = TextSendMessage(
                         text=f"{place_ns}\n名稱: {place_name}\n行車時間：{place_drtime}\n地圖: {maps_url}"
                     )
-            messages.append(location_message)
-        line_bot_api.reply_message(event.reply_token, messages)
+            plmessages.append(place_message)
+        line_bot_api.reply_message(event.reply_token, plmessages)
     elif search_keyword == "國5":
         df = pd.read_csv('國5.csv')
         result_df = df[df['北上1/南下2/雙向3'] == 3 ]
@@ -228,8 +224,6 @@ def handle_location(event):
                 if elements['status'] == 'OK':
                     distance = elements['distance']['text']
                     duration = elements['duration']['text']
-                    print(f"Distance: {distance}")
-                    print(f"Duration: {duration}")
                 else:
                     distance = None
                     duration = None
@@ -256,11 +250,11 @@ def handle_location(event):
             else:
                 place_ns = '南'
             place_drtime = df_reset['行車時間'][i]
-            location_message = TextSendMessage(
+            place_message = TextSendMessage(
                         text=f"{place_ns}\n名稱: {place_name}\n行車時間：{place_drtime}\n地圖: {maps_url}"
                     )
-            messages.append(location_message)
-        line_bot_api.reply_message(event.reply_token, messages)
+            plmessages.append(place_message)
+        line_bot_api.reply_message(event.reply_token, plmessages)
     else:
         try:
             places_result = gmaps.places_nearby(location, keyword=search_keyword, radius=500)
