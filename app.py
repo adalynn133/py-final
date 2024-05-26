@@ -157,8 +157,10 @@ def handle_location(event):
         filtered_df = df[df['北上1/南下2/雙向3'] == 3 ]
         if search_keyword == "北上國3":
             filtered_df2 = df[df['北上1/南下2/雙向3'] == 1 ]
+            ns = '1位置'
         else:
             filtered_df2 = df[df['北上1/南下2/雙向3'] == 2 ]
+            ns = '2位置'
         result_df = pd.concat([filtered_df, filtered_df2], axis=0)
         result_df['距離'] = None
         result_df['行車時間'] = None
@@ -213,7 +215,7 @@ def handle_location(event):
         result_df = df[df['北上1/南下2/雙向3'] == 3 ]
         result_df['距離'] = None
         result_df['行車時間'] = None
-        for value in result_df[ns]:
+        for value in result_df['1位置']:
             loc = value.split(',')
             wish_loc = (loc[0],loc[1])
             now = datetime.now()
