@@ -136,7 +136,7 @@ def handle_location(event):
         for i in range(3):
             place_name = df_reset['名稱'][i]
             place_dis = df_reset['距離'][i]
-            str_loc = str(df_reset['1位置'][i])
+            str_loc = str(df_reset[ns][i])
             place_loc = str_loc.split(',')
             place_lat = place_loc[0]
             place_lng = place_loc[1]
@@ -194,7 +194,7 @@ def handle_location(event):
         for i in range(3):
             place_name = df_reset['名稱'][i]
             place_dis = df_reset['距離'][i]
-            str_loc = str(df_reset['1位置'][i])
+            str_loc = str(df_reset[ns][i])
             place_loc = str_loc.split(',')
             place_lat = place_loc[0]
             place_lng = place_loc[1]
