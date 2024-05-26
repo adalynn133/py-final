@@ -241,7 +241,7 @@ def handle_location(event):
         result_df['距離'] = pd.to_numeric(result_df['距離'])
         result_df_sorted = result_df.sort_values(by='距離')
         df_reset = result_df_sorted.reset_index(drop=True)
-        for i in range(3):
+        for i in range(2):
             place_name = df_reset['名稱'][i]
             place_dis = df_reset['距離'][i]
             str_loc = str(df_reset['1位置'][i])
