@@ -11,6 +11,7 @@ import json
 import os
 import requests
 import pandas as pd
+from datetime import datetime
 
 app = Flask(__name__)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
@@ -88,12 +89,176 @@ def handle_location(event):
     latitude = event.message.latitude
     longitude = event.message.longitude
     location = {'lat': latitude, 'lng': longitude}
+    dis = []
+    drtime = []
+    origin = (latitude,longitude)
+    ns = ''
     if search_keyword == "北上國1" or search_keyword == "南下國1":
         df = pd.read_csv('國1.csv')
+        filtered_df = df[df['北上1/南下2/雙向3'] == 3 ]
+        if search_keyword == "北上國1":
+            filtered_df2 = df[df['北上1/南下2/雙向3'] == 1 ]
+            ns = '1位置'
+        else:
+            filtered_df2 = df[df['北上1/南下2/雙向3'] == 2 ]
+            ns = '2位置'
+        result_df = pd.concat([filtered_df, filtered_df2], axis=0)
+        result_df['距離'] = None
+        result_df['行車時間'] = None
+        for value in result_df[ns]:
+            loc = value.split(',')
+            wish_loc = (loc[0],loc[1])
+            now = datetime.now()
+            distance_matrix_result = gmaps.distance_matrix(origins=[origin],
+                                               destinations=[wish_loc],
+                                               mode="driving",
+                                               departure_time=now)   
+            if distance_matrix_result['rows']:
+                elements = distance_matrix_result['rows'][0]['elements'][0]
+                if elements['status'] == 'OK':
+                    distance = elements['distance']['text']
+                    duration = elements['duration']['text']
+                    print(f"Distance: {distance}")
+                    print(f"Duration: {duration}")
+                else:
+                    distance = None
+                    duration = None
+            else:
+                distance = None
+                duration = None
+            dis.append(distance)
+            drtime.append(duration)
+        result_df['距離'] = dis
+        result_df['行車時間'] = drtime
+        result_df['距離'] = result_df['距離'].str.replace(r'[a-zA-Z]', '', regex=True)
+        result_df['距離'] = pd.to_numeric(result_df['距離'])
+        result_df_sorted = result_df.sort_values(by='距離')
+        df_reset = result_df_sorted.reset_index(drop=True)
+        for i in range(3):
+            place_name = df_reset['名稱'][i]
+            place_dis = df_reset['距離'][i]
+            place_loc = df_reset['1位置'][i].split(',')
+            place_lat = place_loc[0]
+            place_lng = place_loc[1]
+            maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
+            if float(place_lat) >= float(latitude):
+                place_ns = '北'
+            else:
+                place_ns = '南'
+            place_drtime = df_reset['行車時間'][i]
+            location_message = TextSendMessage(
+                        text=f"{place_ns}\n名稱: {place_name}\n行車時間：{place_drtime}\n地圖: {maps_url}"
+                    )
+            messages.append(location_message)
+        line_bot_api.reply_message(event.reply_token, messages)
+   
     elif search_keyword == "北上國3" or search_keyword == "南下國3":
         df = pd.read_csv('國3.csv')
+        filtered_df = df[df['北上1/南下2/雙向3'] == 3 ]
+        if search_keyword == "北上國3":
+            filtered_df2 = df[df['北上1/南下2/雙向3'] == 1 ]
+        else:
+            filtered_df2 = df[df['北上1/南下2/雙向3'] == 2 ]
+        result_df = pd.concat([filtered_df, filtered_df2], axis=0)
+        result_df['距離'] = None
+        result_df['行車時間'] = None
+        for value in result_df[ns]:
+            loc = value.split(',')
+            wish_loc = (loc[0],loc[1])
+            now = datetime.now()
+            distance_matrix_result = gmaps.distance_matrix(origins=[origin],
+                                               destinations=[wish_loc],
+                                               mode="driving",
+                                               departure_time=now)   
+            if distance_matrix_result['rows']:
+                elements = distance_matrix_result['rows'][0]['elements'][0]
+                if elements['status'] == 'OK':
+                    distance = elements['distance']['text']
+                    duration = elements['duration']['text']
+                    print(f"Distance: {distance}")
+                    print(f"Duration: {duration}")
+                else:
+                    distance = None
+                    duration = None
+            else:
+                distance = None
+                duration = None
+            dis.append(distance)
+            drtime.append(duration)
+        result_df['距離'] = dis
+        result_df['行車時間'] = drtime
+        result_df['距離'] = result_df['距離'].str.replace(r'[a-zA-Z]', '', regex=True)
+        result_df['距離'] = pd.to_numeric(result_df['距離'])
+        result_df_sorted = result_df.sort_values(by='距離')
+        df_reset = result_df_sorted.reset_index(drop=True)
+        for i in range(3):
+            place_name = df_reset['名稱'][i]
+            place_dis = df_reset['距離'][i]
+            place_loc = df_reset['1位置'][i].split(',')
+            place_lat = place_loc[0]
+            place_lng = place_loc[1]
+            maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
+            if float(place_lat) >= float(latitude):
+                place_ns = '北'
+            else:
+                place_ns = '南'
+            place_drtime = df_reset['行車時間'][i]
+            location_message = TextSendMessage(
+                        text=f"{place_ns}\n名稱: {place_name}\n行車時間：{place_drtime}\n地圖: {maps_url}"
+                    )
+            messages.append(location_message)
+        line_bot_api.reply_message(event.reply_token, messages)
     elif search_keyword == "國5":
         df = pd.read_csv('國5.csv')
+        result_df = df[df['北上1/南下2/雙向3'] == 3 ]
+        result_df['距離'] = None
+        result_df['行車時間'] = None
+        for value in result_df[ns]:
+            loc = value.split(',')
+            wish_loc = (loc[0],loc[1])
+            now = datetime.now()
+            distance_matrix_result = gmaps.distance_matrix(origins=[origin],
+                                               destinations=[wish_loc],
+                                               mode="driving",
+                                               departure_time=now)   
+            if distance_matrix_result['rows']:
+                elements = distance_matrix_result['rows'][0]['elements'][0]
+                if elements['status'] == 'OK':
+                    distance = elements['distance']['text']
+                    duration = elements['duration']['text']
+                    print(f"Distance: {distance}")
+                    print(f"Duration: {duration}")
+                else:
+                    distance = None
+                    duration = None
+            else:
+                distance = None
+                duration = None
+            dis.append(distance)
+            drtime.append(duration)
+        result_df['距離'] = dis
+        result_df['行車時間'] = drtime
+        result_df['距離'] = result_df['距離'].str.replace(r'[a-zA-Z]', '', regex=True)
+        result_df['距離'] = pd.to_numeric(result_df['距離'])
+        result_df_sorted = result_df.sort_values(by='距離')
+        df_reset = result_df_sorted.reset_index(drop=True)
+        for i in range(3):
+            place_name = df_reset['名稱'][i]
+            place_dis = df_reset['距離'][i]
+            place_loc = df_reset['1位置'][i].split(',')
+            place_lat = place_loc[0]
+            place_lng = place_loc[1]
+            maps_url = f"https://www.google.com/maps/search/?api=1&query={place_lat},{place_lng}"
+            if float(place_lat) >= float(latitude):
+                place_ns = '北'
+            else:
+                place_ns = '南'
+            place_drtime = df_reset['行車時間'][i]
+            location_message = TextSendMessage(
+                        text=f"{place_ns}\n名稱: {place_name}\n行車時間：{place_drtime}\n地圖: {maps_url}"
+                    )
+            messages.append(location_message)
+        line_bot_api.reply_message(event.reply_token, messages)
     else:
         try:
             places_result = gmaps.places_nearby(location, keyword=search_keyword, radius=500)
