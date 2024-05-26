@@ -85,6 +85,9 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
+    latitude = event.message.latitude
+    longitude = event.message.longitude
+    location = {'lat': latitude, 'lng': longitude}
     if search_keyword == "北上國1" or search_keyword == "南下國1":
         df = pd.read_csv('國1.csv')
     elif search_keyword == "北上國3" or search_keyword == "南下國3":
@@ -92,9 +95,6 @@ def handle_location(event):
     elif search_keyword == "國5":
         df = pd.read_csv('國5.csv')
     else:
-        latitude = event.message.latitude
-        longitude = event.message.longitude
-        location = {'lat': latitude, 'lng': longitude}
         try:
             places_result = gmaps.places_nearby(location, keyword=search_keyword, radius=500)
             if 'results' in places_result and places_result['results']:
